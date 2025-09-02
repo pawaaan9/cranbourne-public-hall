@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import Logo from "../../assets/logo.png";
+import Image from "next/image";
 
 const navItems = [
 	"Home",
@@ -29,7 +31,7 @@ const Navbar = () => {
 				}}
 			>
 				{/* Logo or Title */}
-				<div style={{ fontWeight: 700, fontSize: "1.25rem", color: "#222" }}>Public Hall</div>
+				<Image src={Logo} alt="Public Hall Logo" width={50} height={50} />
 
 				{/* Desktop Nav */}
 				<div className="navbar-desktop" style={{ display: "flex", gap: "1.5rem" }}>
