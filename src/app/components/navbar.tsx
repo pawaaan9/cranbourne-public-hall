@@ -14,179 +14,83 @@ const navItems = [
 const Navbar = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
 
-	return (
-		<header style={{ width: "100%", position: "relative", zIndex: 100 }}>
-			<nav
-				style={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center",
-					background: "#fff",
-					borderRadius: "2rem",
-					boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
-					padding: "0.75rem 2rem",
-					margin: "2rem auto",
-					maxWidth: "900px",
-					width: "90%",
-				}}
-			>
-				{/* Logo or Title */}
-				<Image src={Logo} alt="Public Hall Logo" width={50} height={50} />
 
-				{/* Desktop Nav */}
-				<div className="navbar-desktop" style={{ display: "flex", gap: "1.5rem" }}>
-					{navItems.map((item) => (
-						<button
-							key={item}
-							style={{
-								background: "none",
-								border: "none",
-								fontSize: "1rem",
-								fontWeight: 500,
-								color: "#222",
-								padding: "0.5rem 1rem",
-								borderRadius: "1rem",
-								cursor: "pointer",
-								transition: "background 0.2s",
-							}}
-							onMouseOver={e => (e.currentTarget.style.background = "#f3f3f3")}
-							onMouseOut={e => (e.currentTarget.style.background = "none")}
-						>
-							{item}
-						</button>
-					))}
-				</div>
-				<button
-					className="navbar-desktop"
-					style={{
-						background: "#e63946",
-						color: "#fff",
-						border: "none",
-						fontWeight: 600,
-						fontSize: "1rem",
-						padding: "0.5rem 1.5rem",
-						borderRadius: "1.5rem",
-						cursor: "pointer",
-						boxShadow: "0 2px 8px rgba(230,57,70,0.08)",
-						transition: "background 0.2s",
-					}}
-					onMouseOver={e => (e.currentTarget.style.background = "#d62839")}
-					onMouseOut={e => (e.currentTarget.style.background = "#e63946")}
-				>
-					Book Now
-				</button>
+		return (
+				<header className="fixed top-0 left-0 w-full z-50 flex flex-col items-center bg-transparent">
+				<nav id="main-navbar" className="flex justify-between items-center bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-lg px-5 sm:px-5 py-2 mt-1 sm:mt-4 mx-auto max-w-[900px] w-[90%]">
+					{/* Logo or Title */}
+					<Image src={Logo} alt="Public Hall Logo" width={50} height={50} />
 
-				{/* Hamburger for mobile */}
-				<button
-					className="navbar-mobile"
-					style={{
-						background: "none",
-						border: "none",
-						display: "none",
-						flexDirection: "column",
-						justifyContent: "center",
-						alignItems: "center",
-						cursor: "pointer",
-						width: "40px",
-						height: "40px",
-						padding: 0,
-					}}
-					onClick={() => setMenuOpen(!menuOpen)}
-				>
-					<span style={{ width: "28px", height: "4px", background: "#222", borderRadius: "2px", margin: "4px 0" }}></span>
-					<span style={{ width: "28px", height: "4px", background: "#222", borderRadius: "2px", margin: "4px 0" }}></span>
-					<span style={{ width: "28px", height: "4px", background: "#222", borderRadius: "2px", margin: "4px 0" }}></span>
-				</button>
-			</nav>
-
-			{/* Side Menu for Mobile */}
-			{menuOpen && (
-				<div
-					style={{
-						position: "fixed",
-						top: 0,
-						right: 0,
-						width: "70vw",
-						maxWidth: "320px",
-						height: "100vh",
-						background: "#fff",
-						boxShadow: "-2px 0 16px rgba(0,0,0,0.12)",
-						zIndex: 999,
-						display: "flex",
-						flexDirection: "column",
-						padding: "2rem 1.5rem",
-						gap: "1.5rem",
-						animation: "slideIn 0.2s",
-					}}
-				>
+					{/* Desktop Nav */}
+					<div className="navbar-desktop hidden sm:flex gap-10">
+						{navItems.map((item) => (
+							<button
+								key={item}
+								className="bg-transparent border-none text-base font-medium text-[#222] px-4 py-2 rounded-xl cursor-pointer hover:bg-[#f3f3f3] transition"
+							>
+								{item}
+							</button>
+						))}
+					</div>
 					<button
-						style={{
-							alignSelf: "flex-end",
-							background: "none",
-							border: "none",
-							fontSize: "2rem",
-							cursor: "pointer",
-							marginBottom: "1rem",
-						}}
-						onClick={() => setMenuOpen(false)}
-						aria-label="Close menu"
-					>
-						&times;
-					</button>
-					{navItems.map((item) => (
-						<button
-							key={item}
-							style={{
-								background: "none",
-								border: "none",
-								fontSize: "1.2rem",
-								fontWeight: 500,
-								color: "#222",
-								padding: "0.75rem 1rem",
-								borderRadius: "1rem",
-								cursor: "pointer",
-								textAlign: "left",
-								transition: "background 0.2s",
-							}}
-							onClick={() => setMenuOpen(false)}
-						>
-							{item}
-						</button>
-					))}
-					<button
-						style={{
-							background: "#e63946",
-							color: "#fff",
-							border: "none",
-							fontWeight: 600,
-							fontSize: "1.2rem",
-							padding: "0.75rem 1.5rem",
-							borderRadius: "1.5rem",
-							cursor: "pointer",
-							boxShadow: "0 2px 8px rgba(230,57,70,0.08)",
-							transition: "background 0.2s",
-						}}
-						onClick={() => setMenuOpen(false)}
+						className="navbar-desktop hidden sm:block bg-[#e63946] text-white font-semibold text-base px-6 py-2 rounded-xl cursor-pointer shadow hover:bg-[#d62839] transition rounded-[2.5rem] sm:rounded-[3rem]"
 					>
 						Book Now
 					</button>
-				</div>
-			)}
 
-			<style>{`
-				@media (max-width: 700px) {
-					.navbar-desktop {
-						display: none !important;
-					}
-					.navbar-mobile {
-						display: flex !important;
-					}
-				}
-				@keyframes slideIn {
-					from { right: -320px; opacity: 0; }
-					to { right: 0; opacity: 1; }
-				}
-			`}</style>
+					{/* Hamburger for mobile */}
+					<button
+						className="navbar-mobile flex sm:hidden flex-col justify-center items-center cursor-pointer w-10 h-10 p-0 bg-transparent border-none"
+						onClick={() => setMenuOpen(!menuOpen)}
+					>
+						<span className="w-7 h-1 bg-[#222] rounded m-1"></span>
+						<span className="w-7 h-1 bg-[#222] rounded m-1"></span>
+						<span className="w-7 h-1 bg-[#222] rounded m-1"></span>
+					</button>
+				</nav>
+
+					{/* Side Menu for Mobile */}
+					{menuOpen && (
+					<div className="fixed top-0 right-0 w-[85vw] max-w-[260px] h-screen bg-white shadow-lg z-[999] flex flex-col p-4 gap-4 animate-slideIn">
+							<button
+								className="self-end bg-transparent border-none text-3xl cursor-pointer mb-4"
+								onClick={() => setMenuOpen(false)}
+								aria-label="Close menu"
+							>
+								&times;
+							</button>
+							{navItems.map((item) => (
+								<button
+									key={item}
+									className="bg-transparent border-none text-lg font-medium text-[#222] px-4 py-3 rounded-xl cursor-pointer text-left hover:bg-[#f3f3f3] transition"
+									onClick={() => setMenuOpen(false)}
+								>
+									{item}
+								</button>
+							))}
+										<button
+											className="bg-[#e63946] text-white font-semibold text-lg px-6 py-3 rounded-full cursor-pointer shadow hover:bg-[#d62839] transition"
+											onClick={() => setMenuOpen(false)}
+										>
+											Book Now
+										</button>
+						</div>
+					)}
+
+					<style>{`
+						@media (max-width: 700px) {
+							.navbar-desktop {
+								display: none !important;
+							}
+							.navbar-mobile {
+								display: flex !important;
+							}
+						}
+						@keyframes slideIn {
+							from { right: -320px; opacity: 0; }
+							to { right: 0; opacity: 1; }
+						}
+					`}</style>
 		</header>
 	);
 };
