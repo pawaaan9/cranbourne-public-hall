@@ -26,30 +26,32 @@ const ImageSlider: React.FC = () => {
   const [current, setCurrent] = React.useState(0);
   const imagesPerSlide = useImagesPerSlide();
 
-  // Auto-slide (one-way, resets to start after last)
+  // Infinite auto-scroll (one-way)
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + imagesPerSlide < images.length ? prev + imagesPerSlide : 0));
+      setCurrent((prev) => (prev + imagesPerSlide) % images.length);
     }, 3500);
     return () => clearInterval(interval);
   }, [imagesPerSlide]);
 
   const nextSlide = () => {
-    setCurrent((prev) => (prev + imagesPerSlide < images.length ? prev + imagesPerSlide : 0));
+    setCurrent((prev) => (prev + imagesPerSlide) % images.length);
   };
 
   const prevSlide = () => {
-    setCurrent((prev) => (prev - imagesPerSlide >= 0 ? prev - imagesPerSlide : images.length - imagesPerSlide));
+    setCurrent((prev) => (prev - imagesPerSlide + images.length) % images.length);
   };
 
-  const visibleImages = images.slice(current, current + imagesPerSlide);
+  // Get visible images, wrapping around if needed
+  const visibleImages = Array.from({ length: imagesPerSlide }, (_, i) => images[(current + i) % images.length]);
 
   // Responsive image size
   const getImageSize = () => {
     if (typeof window !== "undefined" && window.innerWidth < 640) {
-      return { width: 360, height: 260 };
+      // Larger size for mobile view
+      return { width: 375, height: 300 };
     }
-    return { width: 400, height: 250 };
+    return { width: 800, height: 450 };
   };
   const { width, height } = getImageSize();
 
@@ -62,7 +64,7 @@ const ImageSlider: React.FC = () => {
         <div className={`grid grid-cols-${imagesPerSlide} gap-4 w-full`}>
           {visibleImages.map((src, idx) => (
             <div key={idx} className="rounded-xl overflow-hidden aspect-video bg-gray-100">
-              <Image src={src} alt={`Gallery ${idx}`} width={width} height={height} className="object-cover w-full h-full" />
+              <Image src={src} alt={`Gallery ${(current + idx) % images.length}`} width={width} height={height} className="object-cover w-full h-full" />
             </div>
           ))}
         </div>
@@ -71,8 +73,8 @@ const ImageSlider: React.FC = () => {
         </button>
       </div>
       <div className="flex gap-2 mt-4">
-        {Array.from({ length: Math.ceil(images.length / imagesPerSlide) }).map((_, i) => (
-          <span key={i} className={`w-3 h-3 rounded-full ${i * imagesPerSlide === current ? "bg-orange-500" : "bg-gray-300"}`}></span>
+        {images.map((_, i) => (
+          <span key={i} className={`w-3 h-3 rounded-full ${i === current ? "bg-orange-500" : "bg-gray-300"}`}></span>
         ))}
       </div>
     </div>
