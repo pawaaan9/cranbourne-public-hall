@@ -1,5 +1,13 @@
 
+
 import Image from "next/image";
+import ImageSlider from "./components/ImageSlider";
+// Import images from assets/gallery
+import img1 from "../assets/gallary/WhatsApp Image 2025-09-02 at 10.09.28_a5eea7cc.jpg";
+import img2 from "../assets/gallary/WhatsApp Image 2025-09-02 at 10.09.28_fb28bc80.jpg";
+import img3 from "../assets/gallary/WhatsApp Image 2025-09-02 at 10.09.29_05ac3d00.jpg";
+import img4 from "../assets/gallary/WhatsApp Image 2025-09-02 at 10.09.29_7aeb383f.jpg";
+import img5 from "../assets/gallary/WhatsApp Image 2025-09-02 at 10.09.29_ce034595.jpg";
 
 export default function Home() {
   return (
@@ -20,6 +28,12 @@ export default function Home() {
               <span className="truncate">Book Now</span>
             </button>
           </section>
+
+            {/* Image Slider Section */}
+            <section className="mb-8">
+              <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Gallery</h2>
+              <ImageSlider  />
+            </section>
 
           {/* Facilities Section */}
           <section className="mb-8">
