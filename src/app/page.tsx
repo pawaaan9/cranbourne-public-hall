@@ -180,7 +180,7 @@ export default function Home() {
           {/* Contact Section */}
           <section id="contact" className="mb-8">
             <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Contact Us</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 items-center">
+            <div className="text-[#181411] grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 items-center">
               <div className="text-lg leading-relaxed text-center md:text-left">
                 <p className="font-semibold">Cranbourne Public Hall</p>
                 <p>123 Main Street, Cranbourne, VIC 3977</p>
