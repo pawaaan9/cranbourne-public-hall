@@ -4,11 +4,11 @@ import Logo from "../../assets/logo.png";
 import Image from "next/image";
 
 const navItems = [
-	"Home",
-	"Facilities",
-	"Availability",
-	"Testimonials",
-	"Contact",
+	{ label: "Gallery", href: "#gallery" },
+	{ label: "Facilities", href: "#facilities" },
+	{ label: "Availability", href: "#availability" },
+	{ label: "Testimonials", href: "#testimonials" },
+	{ label: "Contact", href: "#contact" },
 ];
 
 const Navbar = () => {
@@ -23,17 +23,18 @@ const Navbar = () => {
 
 					{/* Desktop Nav */}
 					<div className="navbar-desktop hidden sm:flex gap-10">
-						{navItems.map((item) => (
-							<button
-								key={item}
-								className="bg-transparent border-none text-base font-medium text-[#222] px-4 py-2 rounded-xl cursor-pointer hover:bg-[#f3f3f3] transition"
-							>
-								{item}
-							</button>
-						))}
+									{navItems.map((item) => (
+										<a
+											key={item.label}
+											href={item.href}
+											className="bg-transparent border-none text-base font-medium text-[#222] px-4 py-2 rounded-xl cursor-pointer hover:bg-[#f3f3f3] transition"
+										>
+											{item.label}
+										</a>
+									))}
 					</div>
 					<button
-						className="navbar-desktop hidden sm:block bg-[#e63946] text-white font-semibold text-base px-6 py-2 rounded-xl cursor-pointer shadow hover:bg-[#d62839] transition rounded-[2.5rem] sm:rounded-[3rem]"
+						className="navbar-desktop hidden sm:block bg-[#e63946] text-white font-semibold text-base px-6 py-2 rounded-[2.5rem] sm:rounded-[3rem] cursor-pointer shadow hover:bg-[#d62839] transition"
 					>
 						Book Now
 					</button>
@@ -59,15 +60,16 @@ const Navbar = () => {
 							>
 								&times;
 							</button>
-							{navItems.map((item) => (
-								<button
-									key={item}
-									className="bg-transparent border-none text-lg font-medium text-[#222] px-4 py-3 rounded-xl cursor-pointer text-left hover:bg-[#f3f3f3] transition"
-									onClick={() => setMenuOpen(false)}
-								>
-									{item}
-								</button>
-							))}
+										{navItems.map((item) => (
+											<a
+												key={item.label}
+												href={item.href}
+												className="bg-transparent border-none text-lg font-medium text-[#222] px-4 py-3 rounded-xl cursor-pointer text-left hover:bg-[#f3f3f3] transition"
+												onClick={() => setMenuOpen(false)}
+											>
+												{item.label}
+											</a>
+										))}
 										<button
 											className="bg-[#e63946] text-white font-semibold text-lg px-6 py-3 rounded-full cursor-pointer shadow hover:bg-[#d62839] transition"
 											onClick={() => setMenuOpen(false)}

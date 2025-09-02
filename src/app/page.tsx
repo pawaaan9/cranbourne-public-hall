@@ -17,7 +17,7 @@ export default function Home() {
       <main className="flex-1 pt-24 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-col items-center bg-[#fdfaf6]">
         <div className="w-full max-w-[1200px]">
           {/* Hero Section */}
-          <section className="flex min-h-[320px] sm:min-h-[420px] md:min-h-[520px] flex-col gap-6 sm:gap-8 bg-cover bg-center bg-no-repeat rounded-2xl items-center justify-center p-4 sm:p-8 mb-8" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWrPNqAuczv_W7aEzjS0rgxmlHwOE7e_bVfhAdwu3mmXpt_Em2HVzXF6n1IqlsR_ZBtnxvOjyvJYz0fqvFuliqBrCIenx8EXyXygXHJETlvo9Zopy1q0uFT92GlYy2Ux9iQqgPWlCjOdGO0X9GFS0Ii5PriLwHTbwWJ97M3dMtmye8_NzA-NTCFx4Qnf-Xb9bA8kntd1vqZiP_Mb4sRC0oKLFNcI4udARLPEruefZmcQKdhUdEOXtX5LZLCjYXYl9EUyPu3gETI-bK")'}}>
+          <section id="hero" className="flex min-h-[320px] sm:min-h-[420px] md:min-h-[520px] flex-col gap-6 sm:gap-8 bg-cover bg-center bg-no-repeat rounded-2xl items-center justify-center p-4 sm:p-8 mb-8" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWrPNqAuczv_W7aEzjS0rgxmlHwOE7e_bVfhAdwu3mmXpt_Em2HVzXF6n1IqlsR_ZBtnxvOjyvJYz0fqvFuliqBrCIenx8EXyXygXHJETlvo9Zopy1q0uFT92GlYy2Ux9iQqgPWlCjOdGO0X9GFS0Ii5PriLwHTbwWJ97M3dMtmye8_NzA-NTCFx4Qnf-Xb9bA8kntd1vqZiP_Mb4sRC0oKLFNcI4udARLPEruefZmcQKdhUdEOXtX5LZLCjYXYl9EUyPu3gETI-bK")'}}>
             <div className="flex flex-col gap-2 sm:gap-4 text-center">
               <h1 className="text-white text-3xl sm:text-5xl md:text-6xl font-black leading-tight tracking-[-0.033em]">Cranbourne Public Hall</h1>
               <h2 className="text-white text-base sm:text-lg md:text-xl font-normal leading-normal max-w-2xl mx-auto">
@@ -30,13 +30,13 @@ export default function Home() {
           </section>
 
             {/* Image Slider Section */}
-            <section className="mb-8">
+            <section id="gallery" className="mb-8">
               <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Gallery</h2>
               <ImageSlider  />
             </section>
 
           {/* Facilities Section */}
-          <section className="mb-8">
+          <section id="facilities" className="mb-8">
             <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Our Facilities</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Facility 1 */}
@@ -75,7 +75,7 @@ export default function Home() {
           </section>
 
           {/* Availability Section */}
-          <section className="mb-8">
+          <section id="availability" className="mb-8">
             <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Availability</h2>
             <div className="flex flex-wrap items-start justify-center gap-4 sm:gap-8 p-2 sm:p-4">
               {/* July Calendar */}
@@ -124,7 +124,7 @@ export default function Home() {
           </section>
 
           {/* Testimonials Section */}
-          <section className="mb-8">
+          <section id="testimonials" className="mb-8">
             <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">What Our Community Says</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
               {/* Testimonial 1 */}
@@ -178,7 +178,7 @@ export default function Home() {
           </section>
 
           {/* Contact Section */}
-          <section className="mb-8">
+          <section id="contact" className="mb-8">
             <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Contact Us</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 items-center">
               <div className="text-lg leading-relaxed text-center md:text-left">
