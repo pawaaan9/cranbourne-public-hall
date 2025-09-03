@@ -3,6 +3,7 @@
 
 import ImageSlider from "./components/ImageSlider";
 import Footer from "./components/Footer";
+import Calendar from "./components/Calendar";
 
 export default function Home() {
   return (
@@ -73,48 +74,8 @@ export default function Home() {
           <section id="availability" className="mb-8">
             <h2 className="text-[#181411] text-2xl sm:text-3xl font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-4 sm:pb-6 pt-6 sm:pt-8 text-center">Availability</h2>
             <div className="flex flex-wrap items-start justify-center gap-4 sm:gap-8 p-2 sm:p-4">
-              {/* July Calendar */}
-              <div className="flex min-w-80 max-w-[420px] flex-1 flex-col gap-1 p-4 bg-white rounded-lg shadow-md">
-                <div className="flex items-center justify-between p-2">
-                  <button className="text-[#181411] hover:text-[#ec8013] transition-colors rounded-full p-2">
-                    {/* Left Arrow SVG */}
-                    <svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
-                    </svg>
-                  </button>
-                  <p className="text-[#181411] text-xl font-bold leading-tight">July 2024</p>
-                  <div className="w-8"></div>
-                </div>
-                <div className="grid grid-cols-7 gap-1">
-                  {/* Days of week */}
-                  {['S','M','T','W','T','F','S'].map((d,i)=>(<p key={i} className="text-center text-[#897561] text-sm font-bold leading-normal tracking-[0.015em] py-2">{d}</p>))}
-                  {/* Dates (static for now) */}
-                  {[1,2,3,4].map(d=>(<button key={d} className="h-12 w-full text-gray-400 text-base font-medium leading-normal cursor-not-allowed">{d}</button>))}
-                  <button className="h-12 w-full text-white text-base font-medium leading-normal rounded-full bg-[#ec8013]">5</button>
-                  {[6,7].map(d=>(<button key={d} className="h-12 w-full text-gray-400 text-base font-medium leading-normal cursor-not-allowed">{d}</button>))}
-                  {[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map(d=>(<button key={d} className="h-12 w-full hover:bg-stone-100 rounded-full text-[#181411] text-base font-medium leading-normal">{d}</button>))}
-                </div>
-              </div>
-              {/* August Calendar */}
-              <div className="flex min-w-80 max-w-[420px] flex-1 flex-col gap-1 p-4 bg-white rounded-lg shadow-md">
-                <div className="flex items-center justify-between p-2">
-                  <div className="w-8"></div>
-                  <p className="text-[#181411] text-xl font-bold leading-tight">August 2024</p>
-                  <button className="text-[#181411] hover:text-[#ec8013] transition-colors rounded-full p-2">
-                    {/* Right Arrow SVG */}
-                    <svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
-                    </svg>
-                  </button>
-                </div>
-                <div className="grid grid-cols-7 gap-1">
-                  {['S','M','T','W','T','F','S'].map((d,i)=>(<p key={i} className="text-center text-[#897561] text-sm font-bold leading-normal tracking-[0.015em] py-2">{d}</p>))}
-                  <button className="h-12 w-full hover:bg-stone-100 rounded-full text-[#181411] col-start-5 text-base font-medium leading-normal">1</button>
-                  {[2,3,4,5,6].map(d=>(<button key={d} className="h-12 w-full hover:bg-stone-100 rounded-full text-[#181411] text-base font-medium leading-normal">{d}</button>))}
-                  <button className="h-12 w-full text-white text-base font-medium leading-normal rounded-full bg-[#ec8013]">7</button>
-                  {[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map(d=>(<button key={d} className="h-12 w-full hover:bg-stone-100 rounded-full text-[#181411] text-base font-medium leading-normal">{d}</button>))}
-                </div>
-              </div>
+              {/* Interactive Calendar */}
+              <Calendar />
             </div>
           </section>
 
