@@ -16,7 +16,7 @@ export default function Home() {
             <div className="flex flex-col gap-2 sm:gap-4 text-center">
               <h1 className="text-white text-3xl sm:text-5xl md:text-6xl font-black leading-tight tracking-[-0.033em]">Cranbourne Public Hall</h1>
               <h2 className="text-white text-base sm:text-lg md:text-xl font-normal leading-normal max-w-2xl mx-auto">
-                A welcoming space for community events and gatherings, especially for our senior members.
+                From private celebrations to community parties, social groups to business meetings.
               </h2>
             </div>
             <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 sm:h-14 px-6 sm:px-8 bg-[#ec8013] text-white text-base sm:text-lg font-bold leading-normal tracking-[0.015em] hover:bg-[#d47311] transition-colors mt-2 sm:mt-4">
@@ -178,9 +178,9 @@ export default function Home() {
             <div className="text-[#181411] grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 items-center">
               <div className="text-lg leading-relaxed text-center md:text-left">
                 <p className="font-semibold">Cranbourne Public Hall</p>
-                <p>123 Main Street, Cranbourne, VIC 3977</p>
-                <p>Phone: (03) 5555 1234</p>
-                <p>Email: info@cranbournehall.com.au</p>
+                <p>Cnr Clarendon High Streets, VIC, Australia, Victoria</p>
+                <p>Phone: (61) 400 908 740</p>
+                <p>Email: cranbournepublichall@gmail.com</p>
               </div>
               <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg">
                 <div className="w-full h-full bg-center bg-no-repeat bg-cover" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCup_43d0_w2DVQUwC81f0GB5k5osLdZKBvV5Pnu_-40FY0h_HUvsahbGJkPciRTKRMYXTLPnZrMuJUiyuYo1vrUzeRxpt87RWeJDmjUR82hrMpLiVw6iskj5eACY3uXa-eiQyCNZr_RAQo7YIfnmfW1KAmtyZbLzb0xOl97e3MkYp0mntD6kMESM4u1Er7Sw9lckQx9zELmd-BDOi6R9KakrP22fZ8dkqDETD_Y1mDt3-Ps5I7rPow_-GbA-WsvsMH-LkcMZF4pp4U")'}}></div>
