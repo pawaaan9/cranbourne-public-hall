@@ -18,8 +18,10 @@ const Navbar = () => {
 		return (
 				<header className="fixed top-0 left-0 w-full z-50 flex flex-col items-center bg-transparent">
 				<nav id="main-navbar" className="flex justify-between items-center bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-lg px-5 sm:px-5 py-2 mt-1 sm:mt-4 mx-auto max-w-[900px] w-[90%]">
-					{/* Logo or Title */}
-					<Image src={Logo} alt="Public Hall Logo" width={50} height={50} />
+									{/* Logo or Title */}
+													<a href="#hero" aria-label="Go to Hero section">
+														<Image src={Logo} alt="Public Hall Logo" width={50} height={50} className="cursor-pointer" />
+													</a>
 
 					{/* Desktop Nav */}
 					<div className="navbar-desktop hidden sm:flex gap-10">
