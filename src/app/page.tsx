@@ -183,7 +183,16 @@ export default function Home() {
                 <p>Email: cranbournepublichall@gmail.com</p>
               </div>
               <div className="w-full aspect-video rounded-xl overflow-hidden shadow-lg">
-                <div className="w-full h-full bg-center bg-no-repeat bg-cover" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCup_43d0_w2DVQUwC81f0GB5k5osLdZKBvV5Pnu_-40FY0h_HUvsahbGJkPciRTKRMYXTLPnZrMuJUiyuYo1vrUzeRxpt87RWeJDmjUR82hrMpLiVw6iskj5eACY3uXa-eiQyCNZr_RAQo7YIfnmfW1KAmtyZbLzb0xOl97e3MkYp0mntD6kMESM4u1Er7Sw9lckQx9zELmd-BDOi6R9KakrP22fZ8dkqDETD_Y1mDt3-Ps5I7rPow_-GbA-WsvsMH-LkcMZF4pp4U")'}}></div>
+                <iframe
+                  title="Cranbourne Public Hall Location"
+                  src="https://www.google.com/maps?q=Cnr+Clarendon+and+High+Streets,+Cranbourne,+VIC,+Australia,+Victoria+3977&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </div>
             </div>
           </section>
