@@ -4,6 +4,7 @@
 import ImageSlider from "./components/ImageSlider";
 import Footer from "./components/Footer";
 import Calendar from "./components/Calendar";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 export default function Home() {
   return (
@@ -157,6 +158,9 @@ export default function Home() {
               </div>
             </div>
           </section>
+        {/* Up Arrow Button */}
+  {/* Up Arrow Button (Client Component) */}
+  <ScrollToTopButton />
         </div>
   </main>
   <Footer />
