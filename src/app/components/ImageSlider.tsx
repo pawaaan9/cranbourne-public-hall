@@ -32,6 +32,8 @@ const useImagesPerSlide = () => {
 const ImageSlider: React.FC = () => {
   const [current, setCurrent] = React.useState(0);
   const imagesPerSlide = useImagesPerSlide();
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalImg, setModalImg] = React.useState<StaticImageData | null>(null);
 
   // Infinite auto-scroll
   React.useEffect(() => {
@@ -64,76 +66,113 @@ const ImageSlider: React.FC = () => {
   };
   const { width, height } = getImageSize();
 
-  return (
-    <div className="w-full flex flex-col items-center py-8">
-      <div className="flex items-center justify-center gap-4 w-full">
-        <button
-          onClick={prevSlide}
-          className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
-        >
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+  const handleImageClick = (img: StaticImageData) => {
+    setModalImg(img);
+    setModalOpen(true);
+  };
 
-        {/* Grid layout - tailwind doesn't support dynamic cols directly */}
-        <div
-          className={`grid gap-4 w-full ${
-            imagesPerSlide === 1 ? "grid-cols-1" : "grid-cols-4"
-          }`}
-        >
-          {visibleImages.map((src, idx) => (
-            <div
-              key={idx}
-              className="rounded-xl overflow-hidden aspect-video bg-gray-100"
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalImg(null);
+  };
+
+  return (
+    <>
+      <div className="w-full flex flex-col items-center py-8">
+        <div className="flex items-center justify-center gap-4 w-full">
+          <button
+            onClick={prevSlide}
+            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+          >
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
             >
-              <Image
-                src={src}
-                alt={`Gallery ${(current + idx) % images.length}`}
-                width={width}
-                height={height}
-                className="object-cover w-full h-full"
-              />
-            </div>
-          ))}
+              <path d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Grid layout - tailwind doesn't support dynamic cols directly */}
+          <div
+            className={`grid gap-4 w-full ${
+              imagesPerSlide === 1 ? "grid-cols-1" : "grid-cols-4"
+            }`}
+          >
+            {visibleImages.map((src, idx) => (
+              <div
+                key={idx}
+                className="rounded-xl overflow-hidden aspect-video bg-gray-100 cursor-pointer"
+                onClick={() => handleImageClick(src)}
+              >
+                <Image
+                  src={src}
+                  alt={`Gallery ${(current + idx) % images.length}`}
+                  width={width}
+                  height={height}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={nextSlide}
+            className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+          >
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
-        <button
-          onClick={nextSlide}
-          className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
-        >
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        {/* Dots */}
+        <div className="flex gap-2 mt-4">
+          {images.map((_, i) => (
+            <span
+              key={i}
+              className={`w-3 h-3 rounded-full ${
+                i === current ? "bg-orange-500" : "bg-gray-300"
+              }`}
+            ></span>
+          ))}
+        </div>
       </div>
 
-      {/* Dots */}
-      <div className="flex gap-2 mt-4">
-        {images.map((_, i) => (
-          <span
-            key={i}
-            className={`w-3 h-3 rounded-full ${
-              i === current ? "bg-orange-500" : "bg-gray-300"
-            }`}
-          ></span>
-        ))}
-      </div>
-    </div>
+      {/* Modal for large image */}
+      {modalOpen && modalImg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)'}}>
+          <div className="relative bg-white rounded-xl shadow-lg p-4 flex flex-col items-center" style={{width: '600px', height: '400px'}}>
+            <button
+              className="absolute top-2 right-2 text-2xl text-gray-700 hover:text-red-500 bg-white rounded-full p-2 shadow"
+              onClick={handleCloseModal}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <div className="flex items-center justify-center w-full h-full">
+              <Image
+                src={modalImg}
+                alt="Large Gallery"
+                width={560}
+                height={360}
+                className="object-contain w-[560px] h-[360px] rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
