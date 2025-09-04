@@ -5,6 +5,7 @@ import ImageSlider from "./components/ImageSlider";
 import Footer from "./components/Footer";
 import Calendar from "./components/Calendar";
 import ScrollToTopButton from "./components/ScrollToTopButton";
+import Hero from "../assets/hero.jpg"
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
   <main className="flex-1 pt-24 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-col items-center bg-[#fdfaf6]">
         <div className="w-full max-w-[1200px]">
           {/* Hero Section */}
-          <section id="hero" className="flex min-h-[320px] sm:min-h-[420px] md:min-h-[520px] flex-col gap-6 sm:gap-8 bg-cover bg-center bg-no-repeat rounded-2xl items-center justify-center p-4 sm:p-8 mb-8" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWrPNqAuczv_W7aEzjS0rgxmlHwOE7e_bVfhAdwu3mmXpt_Em2HVzXF6n1IqlsR_ZBtnxvOjyvJYz0fqvFuliqBrCIenx8EXyXygXHJETlvo9Zopy1q0uFT92GlYy2Ux9iQqgPWlCjOdGO0X9GFS0Ii5PriLwHTbwWJ97M3dMtmye8_NzA-NTCFx4Qnf-Xb9bA8kntd1vqZiP_Mb4sRC0oKLFNcI4udARLPEruefZmcQKdhUdEOXtX5LZLCjYXYl9EUyPu3gETI-bK")'}}>
+          <section id="hero" className="flex min-h-[320px] sm:min-h-[420px] md:min-h-[520px] flex-col gap-6 sm:gap-8 bg-cover bg-center bg-no-repeat rounded-2xl items-center justify-center p-4 sm:p-8 mb-8" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%), url(${Hero.src})`}}>
             <div className="flex flex-col gap-2 sm:gap-4 text-center">
               <h1 className="text-white text-3xl sm:text-5xl md:text-6xl font-black leading-tight tracking-[-0.033em]">Cranbourne Public Hall</h1>
               <h2 className="text-white text-base sm:text-lg md:text-xl font-normal leading-normal max-w-2xl mx-auto">
