@@ -15,8 +15,19 @@ export default function BookNow() {
     startTime: "",
     endTime: "",
     guests: "",
+    resources: [] as string[],
     message: ""
   });
+
+  // Resource mapping with names and descriptions
+  const resourceMap = {
+    'main-hall': { name: 'Main Hall', description: 'Large main hall perfect for weddings, parties, and community events', capacity: 150, type: 'Hall' },
+    'meeting-room': { name: 'Meeting Room', description: 'Smaller room ideal for meetings, workshops, and intimate gatherings', capacity: 20, type: 'Room' },
+    'outdoor-area': { name: 'Outdoor Area', description: 'Covered outdoor area with BBQ facilities', capacity: 100, type: 'Outdoor' }
+  };
+
+  // State for selected dates per resource
+  const [selectedDates, setSelectedDates] = useState<Record<string, {day: number, month: number, year: number} | null>>({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -26,10 +37,47 @@ export default function BookNow() {
     }));
   };
 
+  const handleResourceChange = (resourceId: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      resources: checked 
+        ? [...prev.resources, resourceId]
+        : prev.resources.filter(id => id !== resourceId)
+    }));
+  };
+
+  const handleDateSelect = (dateData: { day: number; month: number; year: number; resourceId?: string }) => {
+    if (dateData.resourceId) {
+      const resourceId = dateData.resourceId;
+      setSelectedDates(prev => ({
+        ...prev,
+        [resourceId]: { day: dateData.day, month: dateData.month, year: dateData.year }
+      }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate that at least one resource is selected
+    if (formData.resources.length === 0) {
+      alert("Please select at least one resource for your event.");
+      return;
+    }
+    
+    // Prepare booking data with selected dates
+    const bookingData = {
+      ...formData,
+      selectedDates: selectedDates,
+      resourceDetails: formData.resources.map(resourceId => ({
+        id: resourceId,
+        name: resourceMap[resourceId as keyof typeof resourceMap].name,
+        selectedDate: selectedDates[resourceId]
+      }))
+    };
+    
     // Handle form submission here
-    console.log("Booking request:", formData);
+    console.log("Booking request:", bookingData);
     alert("Thank you for your booking request! We'll get back to you soon.");
   };
 
@@ -54,13 +102,45 @@ export default function BookNow() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
             {/* Calendar and Info - Show first on mobile */}
             <div className="space-y-6 order-1 lg:order-2">
-              {/* Calendar */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-xl font-bold text-[#181411] mb-4 text-center">Check Availability</h3>
-                <div className="flex justify-center">
-                  <Calendar />
+              {/* Calendars for Selected Resources */}
+              {formData.resources.length > 0 ? (
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="text-xl font-bold text-[#181411] mb-4 text-center">Check Availability</h3>
+                  <div className="space-y-6">
+                    {formData.resources.map((resourceId) => {
+                      const resource = resourceMap[resourceId as keyof typeof resourceMap];
+                      return (
+                        <div key={resourceId} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                          <div className="flex justify-center">
+                            <Calendar 
+                              resourceId={resourceId}
+                              resourceName={resource.name}
+                              onDateSelect={handleDateSelect}
+                            />
+                          </div>
+                          {selectedDates[resourceId] && (
+                            <div className="mt-3 text-center">
+                              <p className="text-sm text-[#897561]">
+                                Selected date for {resource.name}: {selectedDates[resourceId]?.day}/{selectedDates[resourceId]?.month + 1}/{selectedDates[resourceId]?.year}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="text-xl font-bold text-[#181411] mb-4 text-center">Check Availability</h3>
+                  <div className="text-center py-8">
+                    <p className="text-[#897561] mb-4">Select resources above to view their availability calendars</p>
+                    <div className="flex justify-center">
+                      <Calendar />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Contact Info */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -177,6 +257,38 @@ export default function BookNow() {
                     <option value="meeting">Meeting</option>
                     <option value="other">Other</option>
                   </select>
+                </div>
+
+                {/* Resource Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-[#181411] mb-3">
+                    Select Resources *
+                  </label>
+                  <div className="space-y-3">
+                    {Object.entries(resourceMap).map(([resourceId, resource]) => (
+                      <div key={resourceId} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <input
+                          type="checkbox"
+                          id={`resource-${resourceId}`}
+                          checked={formData.resources.includes(resourceId)}
+                          onChange={(e) => handleResourceChange(resourceId, e.target.checked)}
+                          className="mt-1 h-4 w-4 text-[#ec8013] focus:ring-[#ec8013] border-gray-300 rounded"
+                        />
+                        <div className="flex-1">
+                          <label htmlFor={`resource-${resourceId}`} className="block text-sm font-medium text-[#181411] cursor-pointer">
+                            {resource.name}
+                          </label>
+                          <p className="text-sm text-[#897561] mt-1">
+                            {resource.description}
+                          </p>
+                          <div className="flex items-center gap-4 mt-2 text-xs text-[#897561]">
+                            <span>Capacity: {resource.capacity} people</span>
+                            <span>Type: {resource.type}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

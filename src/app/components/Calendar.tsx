@@ -11,7 +11,13 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-export default function Calendar() {
+interface CalendarProps {
+  resourceId?: string;
+  resourceName?: string;
+  onDateSelect?: (date: { day: number; month: number; year: number; resourceId?: string }) => void;
+}
+
+export default function Calendar({ resourceId, resourceName, onDateSelect }: CalendarProps) {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
@@ -39,7 +45,11 @@ export default function Calendar() {
   };
 
   const handleSelect = (day: number) => {
-    setSelected({ day, month, year });
+    const selectedDate = { day, month, year };
+    setSelected(selectedDate);
+    if (onDateSelect) {
+      onDateSelect({ ...selectedDate, resourceId });
+    }
   };
 
   // Build calendar grid
@@ -62,6 +72,12 @@ export default function Calendar() {
 
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col gap-1 p-4 bg-white rounded-lg shadow-md">
+      {resourceName && (
+        <div className="text-center mb-2">
+          <h4 className="text-sm font-semibold text-[#181411]">{resourceName}</h4>
+          <p className="text-xs text-[#897561]">Availability</p>
+        </div>
+      )}
       <div className="flex items-center justify-between p-2">
         <button className="text-[#181411] hover:text-[#ec8013] transition-colors rounded-full p-2" onClick={handlePrev}>
           {/* Left Arrow SVG */}
