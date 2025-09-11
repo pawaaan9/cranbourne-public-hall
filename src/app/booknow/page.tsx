@@ -1,9 +1,38 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Footer from "../components/Footer";
 import Calendar from "../components/Calendar";
 import Navbar from "../components/navbar";
+
+interface Resource {
+  id: string;
+  name: string;
+  type: string;
+  capacity: number;
+  code: string;
+  description?: string;
+}
+
+interface Address {
+  line1?: string;
+  line2?: string;
+  postcode?: string;
+  state?: string;
+}
+
+interface HallOwner {
+  name: string;
+  address: string | Address;
+  phone: string;
+  email: string;
+  businessName: string;
+}
+
+interface ResourcesResponse {
+  resources: Resource[];
+  hallOwner: HallOwner;
+}
 
 export default function BookNow() {
   const [formData, setFormData] = useState({
@@ -19,12 +48,67 @@ export default function BookNow() {
     message: ""
   });
 
-  // Resource mapping with names and descriptions
-  const resourceMap = {
-    'main-hall': { name: 'Main Hall', description: 'Large main hall perfect for weddings, parties, and community events', capacity: 150, type: 'Hall' },
-    'meeting-room': { name: 'Meeting Room', description: 'Smaller room ideal for meetings, workshops, and intimate gatherings', capacity: 20, type: 'Room' },
-    'outdoor-area': { name: 'Outdoor Area', description: 'Covered outdoor area with BBQ facilities', capacity: 100, type: 'Outdoor' }
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [hallOwner, setHallOwner] = useState<HallOwner | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Helper function to format address
+  const formatAddress = (address: string | Address): string => {
+    if (typeof address === 'string') {
+      return address;
+    }
+    
+    if (typeof address === 'object' && address !== null) {
+      const parts = [];
+      if (address.line1) parts.push(address.line1);
+      if (address.line2) parts.push(address.line2);
+      if (address.state) parts.push(address.state);
+      if (address.postcode) parts.push(address.postcode);
+      return parts.join(', ');
+    }
+    
+    return 'Address not provided';
   };
+
+  // Fetch resources from backend
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/resources/public/bLRLXrfr5pRBVcUntxUFlvXewaw1');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch resources');
+        }
+        
+        const data: ResourcesResponse = await response.json();
+        console.log('Fetched data:', data); // Debug log
+        setResources(data.resources);
+        setHallOwner(data.hallOwner);
+      } catch (err) {
+        console.error('Error fetching resources:', err);
+        setError('Failed to load resources. Please try again later.');
+        // Fallback to hardcoded resources if API fails
+        setResources([
+          { id: 'main-hall', name: 'Main Hall', type: 'hall', capacity: 150, code: 'R001', description: 'Large main hall perfect for weddings, parties, and community events' },
+          { id: 'meeting-room', name: 'Meeting Room', type: 'room', capacity: 20, code: 'R002', description: 'Smaller room ideal for meetings, workshops, and intimate gatherings' },
+          { id: 'outdoor-area', name: 'Outdoor Area', type: 'outdoor', capacity: 100, code: 'R003', description: 'Covered outdoor area with BBQ facilities' }
+        ]);
+        setHallOwner({
+          name: 'Cranbourne Public Hall',
+          address: 'Cnr Clarendon High Streets, VIC, Australia, Victoria',
+          phone: '(61) 400 908 740',
+          email: 'cranbournepublichall@gmail.com',
+          businessName: 'Cranbourne Public Hall'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, []);
 
   // State for selected dates per resource
   const [selectedDates, setSelectedDates] = useState<Record<string, {day: number, month: number, year: number} | null>>({});
@@ -69,11 +153,14 @@ export default function BookNow() {
     const bookingData = {
       ...formData,
       selectedDates: selectedDates,
-      resourceDetails: formData.resources.map(resourceId => ({
-        id: resourceId,
-        name: resourceMap[resourceId as keyof typeof resourceMap].name,
-        selectedDate: selectedDates[resourceId]
-      }))
+      resourceDetails: formData.resources.map(resourceId => {
+        const resource = resources.find(r => r.id === resourceId);
+        return {
+          id: resourceId,
+          name: resource?.name || 'Unknown Resource',
+          selectedDate: selectedDates[resourceId]
+        };
+      })
     };
     
     // Handle form submission here
@@ -108,7 +195,9 @@ export default function BookNow() {
                   <h3 className="text-xl font-bold text-[#181411] mb-4 text-center">Check Availability</h3>
                   <div className="space-y-6">
                     {formData.resources.map((resourceId) => {
-                      const resource = resourceMap[resourceId as keyof typeof resourceMap];
+                      const resource = resources.find(r => r.id === resourceId);
+                      if (!resource) return null;
+                      
                       return (
                         <div key={resourceId} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
                           <div className="flex justify-center">
@@ -152,7 +241,7 @@ export default function BookNow() {
                         <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
                       </svg>
                     </div>
-                    <span className="text-[#181411]">(61) 400 908 740</span>
+                    <span className="text-[#181411]">{hallOwner?.phone || '(61) 400 908 740'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-[#ec8013] rounded-full flex items-center justify-center">
@@ -160,7 +249,7 @@ export default function BookNow() {
                         <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                       </svg>
                     </div>
-                    <span className="text-[#181411]">cranbournepublichall@gmail.com</span>
+                    <span className="text-[#181411]">{hallOwner?.email || 'cranbournepublichall@gmail.com'}</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-[#ec8013] rounded-full flex items-center justify-center mt-1">
@@ -168,7 +257,7 @@ export default function BookNow() {
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                       </svg>
                     </div>
-                    <span className="text-[#181411]">Cnr Clarendon High Streets, VIC, Australia, Victoria</span>
+                    <span className="text-[#181411]">{hallOwner ? formatAddress(hallOwner.address) : 'Cnr Clarendon High Streets, VIC, Australia, Victoria'}</span>
                   </div>
                 </div>
               </div>
@@ -270,31 +359,42 @@ export default function BookNow() {
                   <label className="block text-sm font-medium text-[#181411] mb-3">
                     Select Resources *
                   </label>
-                  <div className="space-y-3">
-                    {Object.entries(resourceMap).map(([resourceId, resource]) => (
-                      <div key={resourceId} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <input
-                          type="checkbox"
-                          id={`resource-${resourceId}`}
-                          checked={formData.resources.includes(resourceId)}
-                          onChange={(e) => handleResourceChange(resourceId, e.target.checked)}
-                          className="mt-1 h-4 w-4 text-[#ec8013] focus:ring-[#ec8013] border-gray-300 rounded"
-                        />
-                        <div className="flex-1">
-                          <label htmlFor={`resource-${resourceId}`} className="block text-sm font-medium text-[#181411] cursor-pointer">
-                            {resource.name}
-                          </label>
-                          <p className="text-sm text-[#897561] mt-1">
-                            {resource.description}
-                          </p>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-[#897561]">
-                            <span>Capacity: {resource.capacity} people</span>
-                            <span>Type: {resource.type}</span>
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <p className="text-[#897561]">Loading resources...</p>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-4">
+                      <p className="text-red-600">{error}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {resources.map((resource) => (
+                        <div key={resource.id} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                          <input
+                            type="checkbox"
+                            id={`resource-${resource.id}`}
+                            checked={formData.resources.includes(resource.id)}
+                            onChange={(e) => handleResourceChange(resource.id, e.target.checked)}
+                            className="mt-1 h-4 w-4 text-[#ec8013] focus:ring-[#ec8013] border-gray-300 rounded"
+                          />
+                          <div className="flex-1">
+                            <label htmlFor={`resource-${resource.id}`} className="block text-sm font-medium text-[#181411] cursor-pointer">
+                              {resource.name}
+                            </label>
+                            <p className="text-sm text-[#897561] mt-1">
+                              {resource.description || `${resource.type.charAt(0).toUpperCase() + resource.type.slice(1)} space for events and gatherings`}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-[#897561]">
+                              <span>Capacity: {resource.capacity} people</span>
+                              <span>Type: {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}</span>
+                              <span>Code: {resource.code}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
