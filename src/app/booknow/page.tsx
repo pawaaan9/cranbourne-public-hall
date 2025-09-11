@@ -382,9 +382,11 @@ export default function BookNow() {
                             <label htmlFor={`resource-${resource.id}`} className="block text-sm font-medium text-[#181411] cursor-pointer">
                               {resource.name}
                             </label>
-                            <p className="text-sm text-[#897561] mt-1">
-                              {resource.description || `${resource.type.charAt(0).toUpperCase() + resource.type.slice(1)} space for events and gatherings`}
-                            </p>
+                            {resource.description && (
+                              <p className="text-sm text-[#897561] mt-1">
+                                {resource.description}
+                              </p>
+                            )}
                             <div className="flex items-center gap-4 mt-2 text-xs text-[#897561]">
                               <span>Capacity: {resource.capacity} people</span>
                               <span>Type: {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}</span>
