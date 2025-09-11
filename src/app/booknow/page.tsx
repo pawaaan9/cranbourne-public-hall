@@ -14,6 +14,16 @@ interface Resource {
   description?: string;
 }
 
+interface Pricing {
+  id: string;
+  resourceId: string;
+  resourceName: string;
+  rateType: string;
+  weekdayRate: number;
+  weekendRate: number;
+  description?: string;
+}
+
 interface Address {
   line1?: string;
   line2?: string;
@@ -49,9 +59,11 @@ export default function BookNow() {
   });
 
   const [resources, setResources] = useState<Resource[]>([]);
+  const [pricing, setPricing] = useState<Pricing[]>([]);
   const [hallOwner, setHallOwner] = useState<HallOwner | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Helper function to format address
   const formatAddress = (address: string | Address): string => {
@@ -71,24 +83,41 @@ export default function BookNow() {
     return 'Address not provided';
   };
 
-  // Fetch resources from backend
+  // Fetch resources and pricing from backend
   useEffect(() => {
-    const fetchResources = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/resources/public/bLRLXrfr5pRBVcUntxUFlvXewaw1');
+        const hallOwnerId = 'bLRLXrfr5pRBVcUntxUFlvXewaw1'; // Cranbourne hall owner ID
         
-        if (!response.ok) {
+        // Fetch resources and pricing in parallel
+        const [resourcesResponse, pricingResponse] = await Promise.all([
+          fetch(`http://localhost:5000/api/resources/public/${hallOwnerId}`),
+          fetch(`http://localhost:5000/api/pricing/public/${hallOwnerId}`)
+        ]);
+        
+        if (!resourcesResponse.ok) {
           throw new Error('Failed to fetch resources');
         }
         
-        const data: ResourcesResponse = await response.json();
-        console.log('Fetched data:', data); // Debug log
-        setResources(data.resources);
-        setHallOwner(data.hallOwner);
+        const resourcesData: ResourcesResponse = await resourcesResponse.json();
+        console.log('Fetched resources:', resourcesData);
+        setResources(resourcesData.resources);
+        setHallOwner(resourcesData.hallOwner);
+        
+        // Handle pricing data
+        if (pricingResponse.ok) {
+          const pricingData: Pricing[] = await pricingResponse.json();
+          console.log('Fetched pricing:', pricingData);
+          setPricing(pricingData);
+        } else {
+          console.log('No pricing data available');
+          setPricing([]);
+        }
+        
       } catch (err) {
-        console.error('Error fetching resources:', err);
-        setError('Failed to load resources. Please try again later.');
+        console.error('Error fetching data:', err);
+        setError('Failed to load data. Please try again later.');
         // Fallback to hardcoded resources if API fails
         setResources([
           { id: 'main-hall', name: 'Main Hall', type: 'hall', capacity: 150, code: 'R001', description: 'Large main hall perfect for weddings, parties, and community events' },
@@ -102,16 +131,46 @@ export default function BookNow() {
           email: 'cranbournepublichall@gmail.com',
           businessName: 'Cranbourne Public Hall'
         });
+        setPricing([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchResources();
+    fetchData();
   }, []);
 
   // State for selected dates per resource
   const [selectedDates, setSelectedDates] = useState<Record<string, {day: number, month: number, year: number} | null>>({});
+
+  // Helper function to get pricing for a resource
+  const getResourcePricing = (resourceId: string): Pricing | null => {
+    return pricing.find(p => p.resourceId === resourceId) || null;
+  };
+
+  // Helper function to calculate estimated cost
+  const calculateEstimatedCost = (resourceId: string, startTime: string, endTime: string, bookingDate: string): number | null => {
+    const resourcePricing = getResourcePricing(resourceId);
+    if (!resourcePricing || !startTime || !endTime || !bookingDate) return null;
+
+    // Calculate duration in hours
+    const start = new Date(`2000-01-01T${startTime}:00`);
+    const end = new Date(`2000-01-01T${endTime}:00`);
+    const durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
+    // Check if it's weekend (Saturday = 6, Sunday = 0)
+    const bookingDateObj = new Date(bookingDate);
+    const isWeekend = bookingDateObj.getDay() === 0 || bookingDateObj.getDay() === 6;
+    
+    const rate = isWeekend ? resourcePricing.weekendRate : resourcePricing.weekdayRate;
+    
+    if (resourcePricing.rateType === 'hourly') {
+      return rate * durationHours;
+    } else {
+      // For daily rates, assume minimum 4 hours for half day, 8+ hours for full day
+      return durationHours >= 8 ? rate : rate * 0.5;
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -140,7 +199,7 @@ export default function BookNow() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate that at least one resource is selected
@@ -148,24 +207,78 @@ export default function BookNow() {
       alert("Please select at least one resource for your event.");
       return;
     }
+
+    // Validate that all required fields are filled
+    if (!formData.name || !formData.email || !formData.phone || !formData.eventType || !formData.date || !formData.startTime || !formData.endTime) {
+      alert("Please fill in all required fields.");
+      return;
+    }
     
-    // Prepare booking data with selected dates
-    const bookingData = {
-      ...formData,
-      selectedDates: selectedDates,
-      resourceDetails: formData.resources.map(resourceId => {
-        const resource = resources.find(r => r.id === resourceId);
-        return {
-          id: resourceId,
-          name: resource?.name || 'Unknown Resource',
-          selectedDate: selectedDates[resourceId]
-        };
-      })
-    };
+    setSubmitting(true);
     
-    // Handle form submission here
-    console.log("Booking request:", bookingData);
-    alert("Thank you for your booking request! We'll get back to you soon.");
+    try {
+      const hallOwnerId = 'bLRLXrfr5pRBVcUntxUFlvXewaw1'; // Cranbourne hall owner ID
+      
+      // For now, we'll use the first selected resource as the main hall
+      // In a more complex system, you might want to handle multiple resources differently
+      const selectedHall = formData.resources[0];
+      
+      // Calculate estimated price on frontend for verification
+      const estimatedPrice = calculateEstimatedCost(selectedHall, formData.startTime, formData.endTime, formData.date);
+      
+      const bookingData = {
+        customerName: formData.name,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        eventType: formData.eventType,
+        selectedHall: selectedHall,
+        bookingDate: formData.date,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        additionalDescription: formData.message,
+        hallOwnerId: hallOwnerId,
+        estimatedPrice: estimatedPrice // Send frontend calculation for verification
+      };
+      
+      console.log("Submitting booking:", bookingData);
+      
+      const response = await fetch('http://localhost:5000/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        const priceMessage = estimatedPrice ? ` Estimated cost: $${estimatedPrice.toFixed(2)}.` : '';
+        alert(`Thank you for your booking request!${priceMessage} We'll get back to you soon with confirmation.`);
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          eventType: "",
+          date: "",
+          startTime: "",
+          endTime: "",
+          guests: "",
+          resources: [],
+          message: ""
+        });
+        setSelectedDates({});
+      } else {
+        throw new Error(result.message || 'Failed to submit booking');
+      }
+      
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+      alert(`Error submitting booking: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -265,14 +378,45 @@ export default function BookNow() {
               {/* Pricing Info */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h3 className="text-xl font-bold text-[#181411] mb-4">Pricing</h3>
-                <div className="space-y-2 text-[#181411]">
-                  <p><strong>Half Day (4 hours):</strong> $150</p>
-                  <p><strong>Full Day (8 hours):</strong> $250</p>
-                  <p><strong>Evening Events:</strong> $200</p>
-                  <p className="text-sm text-[#897561] mt-3">
-                    * Prices may vary based on event type and requirements. Contact us for custom quotes.
-                  </p>
-                </div>
+                {pricing.length > 0 ? (
+                  <div className="space-y-4">
+                    {pricing.map((price) => {
+                      const resource = resources.find(r => r.id === price.resourceId);
+                      if (!resource) return null;
+                      
+                      return (
+                        <div key={price.id} className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+                          <h4 className="font-semibold text-[#181411] mb-2">{resource.name}</h4>
+                          <div className="text-sm text-[#181411] space-y-1">
+                            <div className="flex justify-between">
+                              <span>Weekday ({price.rateType}):</span>
+                              <span className="font-medium">${price.weekdayRate}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Weekend ({price.rateType}):</span>
+                              <span className="font-medium">${price.weekendRate}</span>
+                            </div>
+                            {price.description && (
+                              <p className="text-xs text-[#897561] mt-1">{price.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <p className="text-sm text-[#897561] mt-3">
+                      * Prices may vary based on event type and requirements. Contact us for custom quotes.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 text-[#181411]">
+                    <p><strong>Half Day (4 hours):</strong> $150</p>
+                    <p><strong>Full Day (8 hours):</strong> $250</p>
+                    <p><strong>Evening Events:</strong> $200</p>
+                    <p className="text-sm text-[#897561] mt-3">
+                      * Prices may vary based on event type and requirements. Contact us for custom quotes.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -392,6 +536,15 @@ export default function BookNow() {
                               <span>Type: {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}</span>
                               <span>Code: {resource.code}</span>
                             </div>
+                            {getResourcePricing(resource.id) && (
+                              <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+                                <div className="text-sm font-medium text-green-800 mb-1">Pricing:</div>
+                                <div className="text-xs text-green-700">
+                                  <div>Weekday: ${getResourcePricing(resource.id)?.weekdayRate}/{getResourcePricing(resource.id)?.rateType}</div>
+                                  <div>Weekend: ${getResourcePricing(resource.id)?.weekendRate}/{getResourcePricing(resource.id)?.rateType}</div>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -467,22 +620,66 @@ export default function BookNow() {
                   <label htmlFor="message" className="block text-sm font-medium text-[#181411] mb-2">
                     Additional Information
                   </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
-                      placeholder="Tell us more about your event, special requirements, or any questions you have..."
-                    />
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
+                    placeholder="Tell us more about your event, special requirements, or any questions you have..."
+                  />
                 </div>
+
+                {/* Cost Estimation */}
+                {formData.resources.length > 0 && formData.date && formData.startTime && formData.endTime && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="text-lg font-semibold text-blue-900 mb-3">Estimated Cost</h4>
+                    <div className="space-y-2">
+                      {formData.resources.map((resourceId) => {
+                        const resource = resources.find(r => r.id === resourceId);
+                        const estimatedCost = calculateEstimatedCost(resourceId, formData.startTime, formData.endTime, formData.date);
+                        const resourcePricing = getResourcePricing(resourceId);
+                        
+                        if (!resource || !estimatedCost || !resourcePricing) return null;
+                        
+                        return (
+                          <div key={resourceId} className="flex justify-between items-center text-sm">
+                            <span className="text-blue-800">{resource.name}:</span>
+                            <span className="font-semibold text-blue-900">${estimatedCost.toFixed(2)}</span>
+                          </div>
+                        );
+                      })}
+                      {formData.resources.length > 1 && (
+                        <div className="border-t border-blue-300 pt-2 mt-2">
+                          <div className="flex justify-between items-center font-semibold text-blue-900">
+                            <span>Total Estimated Cost:</span>
+                            <span>
+                              ${formData.resources.reduce((total, resourceId) => {
+                                const cost = calculateEstimatedCost(resourceId, formData.startTime, formData.endTime, formData.date);
+                                return total + (cost || 0);
+                              }, 0).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-blue-700 mt-2">
+                      * This is an estimate. Final pricing may vary based on specific requirements and availability.
+                    </p>
+                  </div>
+                )}
 
                 <button
                   type="submit"
-                  className="w-full bg-[#e63946] text-white font-bold py-4 px-6 rounded-lg hover:bg-[#d62839] transition-colors text-lg"
+                  disabled={submitting}
+                  className={`w-full font-bold py-4 px-6 rounded-lg transition-colors text-lg ${
+                    submitting 
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                      : 'bg-[#e63946] text-white hover:bg-[#d62839]'
+                  }`}
                 >
-                  Submit Booking Request
+                  {submitting ? 'Submitting...' : 'Submit Booking Request'}
                 </button>
               </form>
             </div>
