@@ -317,6 +317,7 @@ export default function BookNow() {
                             <Calendar 
                               resourceId={resourceId}
                               resourceName={resource.name}
+                              hallOwnerId="bLRLXrfr5pRBVcUntxUFlvXewaw1"
                               onDateSelect={handleDateSelect}
                             />
                           </div>
@@ -335,12 +336,12 @@ export default function BookNow() {
               ) : (
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                   <h3 className="text-xl font-bold text-[#181411] mb-4 text-center">Check Availability</h3>
-                  <div className="text-center py-8">
-                    <p className="text-[#897561] mb-4">Select resources above to view their availability calendars</p>
-                    <div className="flex justify-center">
-                      <Calendar />
+                    <div className="text-center py-8">
+                      <p className="text-[#897561] mb-4">Select resources above to view their availability calendars</p>
+                      <div className="flex justify-center">
+                        <Calendar hallOwnerId="bLRLXrfr5pRBVcUntxUFlvXewaw1" />
+                      </div>
                     </div>
-                  </div>
                 </div>
               )}
 

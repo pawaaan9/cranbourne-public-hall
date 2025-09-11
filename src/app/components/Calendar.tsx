@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -11,20 +11,165 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
+interface BookingInfo {
+  bookingId: string;
+  startTime: string;
+  endTime: string;
+  customerName: string;
+  eventType: string;
+  status: string;
+}
+
+interface UnavailableDates {
+  [date: string]: {
+    [resourceId: string]: BookingInfo[];
+  };
+}
+
 interface CalendarProps {
   resourceId?: string;
   resourceName?: string;
+  hallOwnerId?: string;
   onDateSelect?: (date: { day: number; month: number; year: number; resourceId?: string }) => void;
 }
 
-export default function Calendar({ resourceId, resourceName, onDateSelect }: CalendarProps) {
+export default function Calendar({ resourceId, resourceName, hallOwnerId, onDateSelect }: CalendarProps) {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
   const [selected, setSelected] = useState<{ day: number; month: number; year: number } | null>(null);
+  const [unavailableDates, setUnavailableDates] = useState<UnavailableDates>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [offlineMode, setOfflineMode] = useState(false);
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
+
+  // Fetch unavailable dates when month/year changes or resourceId changes
+  useEffect(() => {
+    if (!hallOwnerId) return;
+
+    const fetchUnavailableDates = async (retryCount = 0) => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Calculate date range for the current month
+        const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+        const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
+        
+        // Build query parameters
+        const params = new URLSearchParams({
+          startDate,
+          endDate
+        });
+        
+        if (resourceId) {
+          params.append('resourceId', resourceId);
+        }
+        
+        const url = `http://localhost:5000/api/bookings/unavailable-dates/${hallOwnerId}?${params}`;
+        console.log('Fetching unavailable dates from:', url);
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // Add timeout
+          signal: AbortSignal.timeout(10000) // 10 second timeout
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Successfully fetched unavailable dates:', data);
+          setUnavailableDates(data.unavailableDates || {});
+          setError(null);
+        } else {
+          const errorText = await response.text();
+          let errorMessage = '';
+          
+          try {
+            const errorData = JSON.parse(errorText);
+            errorMessage = errorData.message || errorData.error || `Server error: ${response.status}`;
+          } catch {
+            errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          }
+          
+          const errorDetails = {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorText,
+            url: url
+          };
+          console.error('Failed to fetch unavailable dates:', errorDetails);
+          
+          if (retryCount < 2) {
+            console.log(`Retrying... (${retryCount + 1}/2)`);
+            setTimeout(() => fetchUnavailableDates(retryCount + 1), 2000);
+            return;
+          }
+          
+          setError(errorMessage);
+          setUnavailableDates({});
+        }
+      } catch (error) {
+        console.error('Error fetching unavailable dates:', error);
+        
+        if (retryCount < 2 && error.name !== 'AbortError') {
+          console.log(`Retrying due to network error... (${retryCount + 1}/2)`);
+          setTimeout(() => fetchUnavailableDates(retryCount + 1), 2000);
+          return;
+        }
+        
+        if (error.name === 'AbortError') {
+          setError('Request timeout - please check if backend server is running');
+        } else {
+          setError('Network error - please check if backend server is running on port 5000');
+        }
+        setUnavailableDates({});
+        setOfflineMode(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUnavailableDates();
+  }, [year, month, resourceId, hallOwnerId, daysInMonth]);
+
+  // Helper function to check if a date is unavailable
+  const isDateUnavailable = (day: number): boolean => {
+    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    if (!unavailableDates[dateString]) return false;
+    
+    // If no specific resourceId, check if any resource is booked on this date
+    if (!resourceId) {
+      return Object.keys(unavailableDates[dateString]).length > 0;
+    }
+    
+    // Check if the specific resource is booked on this date
+    return unavailableDates[dateString][resourceId] && unavailableDates[dateString][resourceId].length > 0;
+  };
+
+  // Helper function to get booking info for a date
+  const getBookingInfo = (day: number): BookingInfo[] => {
+    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    if (!unavailableDates[dateString]) return [];
+    
+    if (!resourceId) {
+      // Return all bookings for this date
+      const allBookings: BookingInfo[] = [];
+      Object.values(unavailableDates[dateString]).forEach(bookings => {
+        allBookings.push(...bookings);
+      });
+      return allBookings;
+    }
+    
+    return unavailableDates[dateString][resourceId] || [];
+  };
 
   const handlePrev = () => {
     if (month === 0) {
@@ -59,13 +204,35 @@ export default function Calendar({ resourceId, resourceName, onDateSelect }: Cal
   }
   for (let d = 1; d <= daysInMonth; d++) {
     const isSelected = selected && selected.day === d && selected.month === month && selected.year === year;
+    const isUnavailable = isDateUnavailable(d);
+    const isPast = new Date(year, month, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const bookingInfo = getBookingInfo(d);
+    
+    // Determine button styling
+    let buttonClass = "h-12 w-full rounded-full text-base font-medium leading-normal ";
+    
+    if (isSelected) {
+      buttonClass += "bg-[#ec8013] text-white";
+    } else if (isUnavailable) {
+      buttonClass += "bg-red-100 text-red-600 cursor-not-allowed";
+    } else if (isPast) {
+      buttonClass += "bg-gray-100 text-gray-400 cursor-not-allowed";
+    } else {
+      buttonClass += "hover:bg-stone-100 text-[#181411]";
+    }
+    
     buttons.push(
       <button
         key={d}
-        className={`h-12 w-full rounded-full text-base font-medium leading-normal ${isSelected ? "bg-[#ec8013] text-white" : "hover:bg-stone-100 text-[#181411]"}`}
-        onClick={() => handleSelect(d)}
+        className={buttonClass}
+        onClick={() => !isUnavailable && !isPast ? handleSelect(d) : undefined}
+        disabled={isUnavailable || isPast}
+        title={isUnavailable ? `Booked: ${bookingInfo.map(b => `${b.startTime}-${b.endTime} (${b.eventType})`).join(', ')}` : undefined}
       >
         {d}
+        {isUnavailable && (
+          <div className="w-2 h-2 bg-red-500 rounded-full mx-auto mt-1"></div>
+        )}
       </button>
     );
   }
@@ -76,6 +243,55 @@ export default function Calendar({ resourceId, resourceName, onDateSelect }: Cal
         <div className="text-center mb-2">
           <h4 className="text-sm font-semibold text-[#181411]">{resourceName}</h4>
           <p className="text-xs text-[#897561]">Availability</p>
+        </div>
+      )}
+      
+      {loading && (
+        <div className="text-center py-2">
+          <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-[#ec8013]"></div>
+          <p className="text-xs text-[#897561] mt-1">Loading availability...</p>
+        </div>
+      )}
+      
+      {error && (
+        <div className="text-center py-2">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+            <p className="text-xs text-red-600 mb-2">{error}</p>
+            <div className="flex gap-2 justify-center">
+              <button 
+                onClick={() => {
+                  setError(null);
+                  setOfflineMode(false);
+                  // Trigger a re-fetch
+                  const currentMonth = month;
+                  const currentYear = year;
+                  setMonth(currentMonth === 11 ? 0 : currentMonth + 1);
+                  setTimeout(() => setMonth(currentMonth), 100);
+                }} 
+                className="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded transition-colors"
+              >
+                Retry
+              </button>
+              {offlineMode && (
+                <button 
+                  onClick={() => setError(null)} 
+                  className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded transition-colors"
+                >
+                  Continue Offline
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {offlineMode && !error && (
+        <div className="text-center py-2">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+            <p className="text-xs text-yellow-700">
+              ⚠️ Offline mode - availability data may not be current
+            </p>
+          </div>
         </div>
       )}
       <div className="flex items-center justify-between p-2">
@@ -100,6 +316,24 @@ export default function Calendar({ resourceId, resourceName, onDateSelect }: Cal
           <p key={i} className="text-center text-[#897561] text-sm font-bold leading-normal tracking-[0.015em] py-2">{d}</p>
         ))}
         {buttons}
+      </div>
+      
+      {/* Legend */}
+      <div className="mt-3 pt-2 border-t border-gray-200">
+        <div className="flex flex-wrap gap-2 text-xs text-[#897561] justify-center">
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-red-100 border border-red-300 rounded-full"></div>
+            <span>Booked</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded-full"></div>
+            <span>Past</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-[#ec8013] rounded-full"></div>
+            <span>Selected</span>
+          </div>
+        </div>
       </div>
     </div>
   );
