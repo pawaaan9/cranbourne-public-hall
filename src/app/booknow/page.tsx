@@ -294,7 +294,7 @@ export default function BookNow() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                       placeholder="Your full name"
                     />
                   </div>
@@ -309,7 +309,7 @@ export default function BookNow() {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -326,7 +326,7 @@ export default function BookNow() {
                       required
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                       placeholder="Your phone number"
                     />
                 </div>
@@ -342,7 +342,7 @@ export default function BookNow() {
                       required
                       value={formData.eventType}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                     >
                     <option value="">Select event type</option>
                     <option value="wedding">Wedding</option>
@@ -411,7 +411,7 @@ export default function BookNow() {
                       required
                       value={formData.date}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                     />
                   </div>
                   <div>
@@ -426,7 +426,7 @@ export default function BookNow() {
                       min="1"
                       value={formData.guests}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                       placeholder="Expected guests"
                     />
                   </div>
@@ -444,7 +444,7 @@ export default function BookNow() {
                       required
                       value={formData.startTime}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                     />
                   </div>
                   <div>
@@ -458,7 +458,7 @@ export default function BookNow() {
                       required
                       value={formData.endTime}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                     />
                   </div>
                 </div>
@@ -473,7 +473,7 @@ export default function BookNow() {
                       rows={4}
                       value={formData.message}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec8013] focus:border-gray-300 text-[#181411] bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-0 focus:border-gray-300 text-[#181411] bg-white"
                       placeholder="Tell us more about your event, special requirements, or any questions you have..."
                     />
                 </div>
