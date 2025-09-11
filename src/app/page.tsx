@@ -1,11 +1,11 @@
 
 
-
 import ImageSlider from "./components/ImageSlider";
 import Footer from "./components/Footer";
 import Calendar from "./components/Calendar";
 import ScrollToTopButton from "./components/ScrollToTopButton";
-import Hero from "../assets/hero.jpg"
+import Hero from "../assets/hero.jpg";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -22,9 +22,9 @@ export default function Home() {
                 From private celebrations to community parties, social groups to business meetings.
               </h2>
             </div>
-            <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 sm:h-14 px-6 sm:px-8 bg-[#ec8013] text-white text-base sm:text-lg font-bold leading-normal tracking-[0.015em] hover:bg-[#d47311] transition-colors mt-2 sm:mt-4">
+            <Link href="/booknow" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 sm:h-14 px-6 sm:px-8 bg-[#ec8013] text-white text-base sm:text-lg font-bold leading-normal tracking-[0.015em] hover:bg-[#d47311] transition-colors mt-2 sm:mt-4">
               <span className="truncate">Book Now</span>
-            </button>
+            </Link>
           </section>
 
             {/* Image Slider Section */}

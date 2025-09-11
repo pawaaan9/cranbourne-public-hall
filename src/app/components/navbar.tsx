@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import Logo from "../../assets/logo.png";
 import Image from "next/image";
+import Link from "next/link";
 
 const navItems = [
-	{ label: "Gallery", href: "#gallery" },
-	{ label: "Facilities", href: "#facilities" },
-	{ label: "Availability", href: "#availability" },
-	{ label: "Testimonials", href: "#testimonials" },
-	{ label: "Contact", href: "#contact" },
+	{ label: "Gallery", href: "/#gallery" },
+	{ label: "Facilities", href: "/#facilities" },
+	{ label: "Availability", href: "/#availability" },
+	{ label: "Testimonials", href: "/#testimonials" },
+	{ label: "Contact", href: "/#contact" },
 ];
 
 const Navbar = () => {
@@ -19,27 +20,28 @@ const Navbar = () => {
 				<header className="fixed top-0 left-0 w-full z-50 flex flex-col items-center bg-transparent">
 				<nav id="main-navbar" className="flex justify-between items-center bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-lg px-5 sm:px-5 py-2 mt-1 sm:mt-4 mx-auto max-w-[900px] w-[90%]">
 									{/* Logo or Title */}
-													<a href="#hero" aria-label="Go to Hero section">
+													<Link href="/#hero" aria-label="Go to Hero section">
 														<Image src={Logo} alt="Public Hall Logo" width={50} height={50} className="cursor-pointer" />
-													</a>
+													</Link>
 
 					{/* Desktop Nav */}
 					<div className="navbar-desktop hidden sm:flex gap-10">
 									{navItems.map((item) => (
-										<a
+										<Link
 											key={item.label}
 											href={item.href}
 											className="bg-transparent border-none text-base font-medium text-[#222] px-4 py-2 rounded-xl cursor-pointer hover:bg-[#f3f3f3] transition"
 										>
 											{item.label}
-										</a>
+										</Link>
 									))}
 					</div>
-					<button
+					<Link
+						href="/booknow"
 						className="navbar-desktop hidden sm:block bg-[#e63946] text-white font-semibold text-base px-6 py-2 rounded-[2.5rem] sm:rounded-[3rem] cursor-pointer shadow hover:bg-[#d62839] transition"
 					>
 						Book Now
-					</button>
+					</Link>
 
 					{/* Hamburger for mobile */}
 					<button
@@ -63,21 +65,22 @@ const Navbar = () => {
 								&times;
 							</button>
 										{navItems.map((item) => (
-											<a
+											<Link
 												key={item.label}
 												href={item.href}
 												className="bg-transparent border-none text-lg font-medium text-[#222] px-4 py-3 rounded-xl cursor-pointer text-left hover:bg-[#f3f3f3] transition"
 												onClick={() => setMenuOpen(false)}
 											>
 												{item.label}
-											</a>
+											</Link>
 										))}
-										<button
+										<Link
+											href="/booknow"
 											className="bg-[#e63946] text-white font-semibold text-lg px-6 py-3 rounded-full cursor-pointer shadow hover:bg-[#d62839] transition"
 											onClick={() => setMenuOpen(false)}
 										>
 											Book Now
-										</button>
+										</Link>
 						</div>
 					)}
 

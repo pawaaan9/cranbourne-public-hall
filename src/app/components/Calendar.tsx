@@ -61,7 +61,7 @@ export default function Calendar() {
   }
 
   return (
-    <div className="flex min-w-80 max-w-[420px] flex-1 flex-col gap-1 p-4 bg-white rounded-lg shadow-md">
+    <div className="w-full max-w-sm mx-auto flex flex-col gap-1 p-4 bg-white rounded-lg shadow-md">
       <div className="flex items-center justify-between p-2">
         <button className="text-[#181411] hover:text-[#ec8013] transition-colors rounded-full p-2" onClick={handlePrev}>
           {/* Left Arrow SVG */}
@@ -69,7 +69,7 @@ export default function Calendar() {
             <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
           </svg>
         </button>
-        <p className="text-[#181411] text-xl font-bold leading-tight">
+        <p className="text-[#181411] text-lg sm:text-xl font-bold leading-tight text-center">
           {today.toLocaleString("default", { month: "long" })} {year}
         </p>
         <button className="text-[#181411] hover:text-[#ec8013] transition-colors rounded-full p-2" onClick={handleNext}>
