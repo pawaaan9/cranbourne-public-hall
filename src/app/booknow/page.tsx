@@ -249,6 +249,7 @@ export default function BookNow() {
       const estimatedPrice = calculateEstimatedCost(selectedHall, formData.startTime, formData.endTime, formData.date);
       
       const bookingData = {
+        customerId: user?.id, // Firebase UID of the authenticated customer
         customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone,
@@ -259,7 +260,11 @@ export default function BookNow() {
         endTime: formData.endTime,
         additionalDescription: formData.message,
         hallOwnerId: hallOwnerId,
-        estimatedPrice: estimatedPrice // Send frontend calculation for verification
+        estimatedPrice: estimatedPrice, // Send frontend calculation for verification
+        // Additional customer info for better tracking
+        customerAvatar: user?.avatar,
+        guestCount: formData.guests,
+        bookingSource: 'cranbourne-website'
       };
       
       console.log("Submitting booking:", bookingData);
