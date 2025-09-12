@@ -4,6 +4,8 @@ import Link from "next/link";
 import Footer from "../components/Footer";
 import Calendar from "../components/Calendar";
 import Navbar from "../components/navbar";
+import { useAuth } from "../../contexts/AuthContext";
+import LoginModal from "../../components/LoginModal";
 
 interface Resource {
   id: string;
@@ -45,6 +47,8 @@ interface ResourcesResponse {
 }
 
 export default function BookNow() {
+  const { user, isAuthenticated } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -82,6 +86,18 @@ export default function BookNow() {
     
     return 'Address not provided';
   };
+
+  // Populate form with user data when authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || ""
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   // Fetch resources and pricing from backend
   useEffect(() => {
@@ -202,6 +218,12 @@ export default function BookNow() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+    
     // Validate that at least one resource is selected
     if (formData.resources.length === 0) {
       alert("Please select at least one resource for your event.");
@@ -294,9 +316,21 @@ export default function BookNow() {
             <h1 className="text-4xl sm:text-5xl font-black text-[#181411] mb-4">
               Book Your Event
             </h1>
-            <p className="text-lg text-[#897561] max-w-2xl mx-auto">
+            <p className="text-lg text-[#897561] max-w-2xl mx-auto mb-4">
               Reserve Cranbourne Public Hall for your special occasion. Fill out the form below and we'll get back to you within 24 hours.
             </p>
+            {!isAuthenticated && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-2xl mx-auto">
+                <div className="flex items-center justify-center gap-2 text-amber-800">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                  <p className="font-medium">
+                    Please login to make a booking. Click the profile icon in the bottom right corner to get started.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -689,6 +723,14 @@ export default function BookNow() {
       </main>
 
       <Footer />
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onSuccess={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }

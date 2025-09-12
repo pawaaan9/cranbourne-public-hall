@@ -1,4 +1,5 @@
 
+"use client";
 
 import ImageSlider from "./components/ImageSlider";
 import Footer from "./components/Footer";
@@ -6,8 +7,21 @@ import Calendar from "./components/Calendar";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import Hero from "../assets/hero.jpg";
 import Link from "next/link";
+import { useAuth } from "../contexts/AuthContext";
+import LoginModal from "../components/LoginModal";
+import { useState } from "react";
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const handleBookNowClick = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+    } else {
+      window.location.href = '/booknow';
+    }
+  };
   return (
     <div className="bg-stone-50 font-sans min-h-screen flex flex-col">
 
@@ -22,9 +36,12 @@ export default function Home() {
                 From private celebrations to community parties, social groups to business meetings.
               </h2>
             </div>
-            <Link href="/booknow" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 sm:h-14 px-6 sm:px-8 bg-[#ec8013] text-white text-base sm:text-lg font-bold leading-normal tracking-[0.015em] hover:bg-[#d47311] transition-colors mt-2 sm:mt-4">
+            <button 
+              onClick={handleBookNowClick}
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 sm:h-14 px-6 sm:px-8 bg-[#e63946] text-white text-base sm:text-lg font-bold leading-normal tracking-[0.015em] hover:bg-[#d62839] transition-colors mt-2 sm:mt-4"
+            >
               <span className="truncate">Book Now</span>
-            </Link>
+            </button>
           </section>
 
             {/* Image Slider Section */}
@@ -165,6 +182,17 @@ export default function Home() {
         </div>
   </main>
   <Footer />
+
+  {/* Login Modal */}
+  {showLoginModal && (
+    <LoginModal
+      onClose={() => setShowLoginModal(false)}
+      onSuccess={() => {
+        setShowLoginModal(false);
+        window.location.href = '/booknow';
+      }}
+    />
+  )}
     </div>
   );
 }

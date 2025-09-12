@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import Logo from "../../assets/logo.png";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "../../contexts/AuthContext";
+import LoginModal from "../../components/LoginModal";
 
 const navItems = [
 	{ label: "Gallery", href: "/#gallery" },
@@ -14,6 +16,16 @@ const navItems = [
 
 const Navbar = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
+	const [showLoginModal, setShowLoginModal] = useState(false);
+	const { isAuthenticated } = useAuth();
+
+	const handleBookNowClick = () => {
+		if (!isAuthenticated) {
+			setShowLoginModal(true);
+		} else {
+			window.location.href = '/booknow';
+		}
+	};
 
 
 		return (
@@ -36,12 +48,12 @@ const Navbar = () => {
 										</Link>
 									))}
 					</div>
-					<Link
-						href="/booknow"
-						className="navbar-desktop hidden sm:block bg-[#e63946] text-white font-semibold text-base px-6 py-2 rounded-[2.5rem] sm:rounded-[3rem] cursor-pointer shadow hover:bg-[#d62839] transition"
+					<button
+						onClick={handleBookNowClick}
+						className="navbar-desktop hidden sm:block bg-[#e63946] text-white font-semibold text-base px-6 py-2 rounded-[2.5rem] sm:rounded-[3rem] cursor-pointer shadow hover:bg-[#d62839] transition border-none"
 					>
 						Book Now
-					</Link>
+					</button>
 
 					{/* Hamburger for mobile */}
 					<button
@@ -74,13 +86,15 @@ const Navbar = () => {
 												{item.label}
 											</Link>
 										))}
-										<Link
-											href="/booknow"
-											className="bg-[#e63946] text-white font-semibold text-lg px-6 py-3 rounded-full cursor-pointer shadow hover:bg-[#d62839] transition"
-											onClick={() => setMenuOpen(false)}
+										<button
+											onClick={() => {
+												setMenuOpen(false);
+												handleBookNowClick();
+											}}
+											className="bg-[#e63946] text-white font-semibold text-lg px-6 py-3 rounded-full cursor-pointer shadow hover:bg-[#d62839] transition border-none"
 										>
 											Book Now
-										</Link>
+										</button>
 						</div>
 					)}
 
@@ -98,6 +112,17 @@ const Navbar = () => {
 							to { right: 0; opacity: 1; }
 						}
 					`}</style>
+
+					{/* Login Modal */}
+					{showLoginModal && (
+						<LoginModal
+							onClose={() => setShowLoginModal(false)}
+							onSuccess={() => {
+								setShowLoginModal(false);
+								window.location.href = '/booknow';
+							}}
+						/>
+					)}
 		</header>
 	);
 };
