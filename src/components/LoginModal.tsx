@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -18,6 +19,9 @@ export default function LoginModal({ onClose, onSuccess }: LoginModalProps) {
     phone: ''
   });
   const [error, setError] = useState('');
+
+  // Prevent background scrolling when modal is open
+  useScrollLock(true);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
