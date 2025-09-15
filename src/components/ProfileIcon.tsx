@@ -2,32 +2,37 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import LoginModal from './LoginModal';
 import ProfileModal from './ProfileModal';
 
 export default function ProfileIcon() {
-  const { user, isAuthenticated, logout } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { user, logout, isLoading } = useAuth();
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   const handleProfileClick = () => {
-    if (isAuthenticated) {
-      setShowProfileModal(true);
-    } else {
-      setShowLoginModal(true);
-    }
+    // Only called when user is authenticated
+    setShowProfileModal(true);
   };
+
+  // Don't render anything while loading to avoid flash
+  if (isLoading) {
+    return null;
+  }
+
+  // Only show profile icon for logged-in users
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
-      {/* Profile Icon - Fixed bottom right */}
+      {/* Profile Icon - Fixed bottom right - Only for logged-in users */}
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={handleProfileClick}
           className="w-14 h-14 bg-[#e63946] hover:bg-[#d62839] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#e63946]/30"
-          title={isAuthenticated ? 'View Profile' : 'Login'}
+          title="View Profile"
         >
-          {isAuthenticated && user?.avatar ? (
+          {user?.avatar ? (
             <img
               src={user.avatar}
               alt={user.name}
@@ -44,14 +49,6 @@ export default function ProfileIcon() {
           )}
         </button>
       </div>
-
-      {/* Login Modal */}
-      {showLoginModal && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onSuccess={() => setShowLoginModal(false)}
-        />
-      )}
 
       {/* Profile Modal */}
       {showProfileModal && (

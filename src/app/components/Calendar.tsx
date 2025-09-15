@@ -213,10 +213,10 @@ export default function Calendar({ resourceId, resourceName, hallOwnerId, onDate
     
     if (isSelected) {
       buttonClass += "bg-[#ec8013] text-white";
-    } else if (isUnavailable) {
-      buttonClass += "bg-red-100 text-red-600 cursor-not-allowed";
     } else if (isPast) {
       buttonClass += "bg-gray-100 text-gray-400 cursor-not-allowed";
+    } else if (isUnavailable) {
+      buttonClass += "bg-red-100 text-red-600 cursor-not-allowed";
     } else {
       buttonClass += "hover:bg-stone-100 text-[#181411]";
     }
@@ -225,8 +225,8 @@ export default function Calendar({ resourceId, resourceName, hallOwnerId, onDate
       <button
         key={d}
         className={buttonClass}
-        onClick={() => !isUnavailable && !isPast ? handleSelect(d) : undefined}
-        disabled={isUnavailable || isPast}
+        onClick={() => !isPast && !isUnavailable ? handleSelect(d) : undefined}
+        disabled={isPast || isUnavailable}
         title={isUnavailable ? `Booked: ${bookingInfo.map(b => `${b.startTime}-${b.endTime} (${b.eventType})`).join(', ')}` : undefined}
       >
         {d}
