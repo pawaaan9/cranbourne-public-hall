@@ -2,15 +2,23 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
 import ProfileModal from './ProfileModal';
+import NotificationPanel from './NotificationPanel';
 
 export default function ProfileIcon() {
   const { user, logout, isLoading } = useAuth();
+  const { unreadCount } = useNotifications();
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleProfileClick = () => {
     // Only called when user is authenticated
     setShowProfileModal(true);
+  };
+
+  const handleNotificationClick = () => {
+    setShowNotifications(true);
   };
 
   // Don't render anything while loading to avoid flash
@@ -25,8 +33,32 @@ export default function ProfileIcon() {
 
   return (
     <>
-      {/* Profile Icon - Fixed bottom right - Only for logged-in users */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* Profile Icon and Notification Button - Fixed bottom right - Only for logged-in users */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        {/* Notification Button */}
+        <button
+          onClick={handleNotificationClick}
+          className="w-12 h-12 bg-white hover:bg-gray-50 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-gray-300 border border-gray-200"
+          title="View Notifications"
+        >
+          <div className="relative">
+            <svg
+              className="w-6 h-6 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4 19h6v-6H4v6zM4 5h6V1H4v4zM15 1h5v6h-5V1z" />
+            </svg>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#e63946] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </div>
+        </button>
+
+        {/* Profile Icon */}
         <button
           onClick={handleProfileClick}
           className="w-14 h-14 bg-[#e63946] hover:bg-[#d62839] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#e63946]/30"
@@ -60,6 +92,12 @@ export default function ProfileIcon() {
           }}
         />
       )}
+
+      {/* Notification Panel */}
+      <NotificationPanel
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </>
   );
 }

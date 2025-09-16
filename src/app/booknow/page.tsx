@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import Calendar from "../components/Calendar";
 import Navbar from "../components/navbar";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNotifications } from "../../contexts/NotificationContext";
 import LoginModal from "../../components/LoginModal";
 
 interface Resource {
@@ -48,6 +49,7 @@ interface ResourcesResponse {
 
 export default function BookNow() {
   const { user, isAuthenticated } = useAuth();
+  const { addNotification } = useNotifications();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -281,6 +283,21 @@ export default function BookNow() {
       
       if (response.ok) {
         const priceMessage = estimatedPrice ? ` Estimated cost: $${estimatedPrice.toFixed(2)}.` : '';
+        
+        // Add notification for successful booking submission
+        await addNotification({
+          userId: user?.id || '',
+          type: 'booking_submitted',
+          title: 'Booking Request Submitted',
+          message: `Your booking request for ${formData.eventType} on ${formData.date} has been submitted successfully.${priceMessage} We'll get back to you soon with confirmation.`,
+          data: {
+            bookingId: result.booking?.id,
+            eventType: formData.eventType,
+            date: formData.date,
+            estimatedPrice: estimatedPrice
+          }
+        });
+        
         alert(`Thank you for your booking request!${priceMessage} We'll get back to you soon with confirmation.`);
         // Reset form
         setFormData({
