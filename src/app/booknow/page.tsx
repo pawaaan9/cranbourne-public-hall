@@ -326,7 +326,7 @@ export default function BookNow() {
   };
 
   return (
-    <div className="bg-stone-50 font-sans min-h-screen flex flex-col">
+    <div className="bg-white font-sans min-h-screen flex flex-col">
       {/* Use existing navbar */}
       <Navbar />
 

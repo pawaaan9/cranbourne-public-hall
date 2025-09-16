@@ -108,15 +108,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Backdrop */}
+    <>
+      {/* Invisible backdrop for clicking outside */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 z-40"
         onClick={onClose}
       />
       
       {/* Panel */}
-      <div className="absolute bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-[calc(100vh-8rem)] flex flex-col">
+      <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 max-h-[calc(100vh-8rem)] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
@@ -213,6 +213,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
