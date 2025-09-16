@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
 export interface Notification {
   id: string;
@@ -119,17 +119,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const clearNotification = useCallback(async (notificationId: string) => {
     try {
       const notificationRef = doc(db, 'notifications', notificationId);
-      await updateDoc(notificationRef, {
-        isRead: true,
-        readAt: serverTimestamp(),
-      });
+      await deleteDoc(notificationRef);
       
-      // Remove from local state after a short delay
-      setTimeout(() => {
-        setNotifications(prev => prev.filter(n => n.id !== notificationId));
-      }, 300);
+      // Remove from local state immediately
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
     } catch (error) {
-      console.error('Error clearing notification:', error);
+      console.error('Error deleting notification:', error);
     }
   }, []);
 
@@ -137,21 +132,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     if (!user) return;
 
     try {
-      const updatePromises = notifications.map(notification => 
-        updateDoc(doc(db, 'notifications', notification.id), {
-          isRead: true,
-          readAt: serverTimestamp(),
-        })
+      const deletePromises = notifications.map(notification => 
+        deleteDoc(doc(db, 'notifications', notification.id))
       );
       
-      await Promise.all(updatePromises);
+      await Promise.all(deletePromises);
       
-      // Clear from local state after a short delay
-      setTimeout(() => {
-        setNotifications([]);
-      }, 300);
+      // Clear from local state immediately
+      setNotifications([]);
     } catch (error) {
-      console.error('Error clearing all notifications:', error);
+      console.error('Error deleting all notifications:', error);
     }
   }, [user, notifications]);
 

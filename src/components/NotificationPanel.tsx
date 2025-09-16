@@ -15,7 +15,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     isLoading, 
     markAsRead, 
     markAllAsRead, 
-    clearNotification 
+    clearNotification,
+    clearAllNotifications
   } = useNotifications();
 
   const [isMarkingAll, setIsMarkingAll] = useState(false);
@@ -36,6 +37,11 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   };
 
   const handleDismissNotification = async (notificationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await clearNotification(notificationId);
+  };
+
+  const handleDeleteNotification = async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     await clearNotification(notificationId);
   };
@@ -128,6 +134,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             )}
           </div>
           <div className="flex items-center gap-2">
+            {notifications.length > 0 && (
+              <button
+                onClick={clearAllNotifications}
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
+                title="Delete all notifications"
+              >
+                Delete All
+              </button>
+            )}
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
@@ -183,14 +198,26 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                         }`}>
                           {notification.title}
                         </h4>
-                        <button
-                          onClick={(e) => handleDismissNotification(notification.id, e)}
-                          className="w-5 h-5 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
-                        >
-                          <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => handleDeleteNotification(notification.id, e)}
+                            className="w-5 h-5 rounded-full hover:bg-red-100 flex items-center justify-center transition-colors flex-shrink-0"
+                            title="Delete notification"
+                          >
+                            <svg className="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => handleDismissNotification(notification.id, e)}
+                            className="w-5 h-5 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
+                            title="Dismiss notification"
+                          >
+                            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                       <p className={`text-sm mt-1 ${
                         !notification.isRead ? 'text-gray-800' : 'text-gray-600'
