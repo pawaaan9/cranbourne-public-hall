@@ -284,19 +284,8 @@ export default function BookNow() {
       if (response.ok) {
         const priceMessage = estimatedPrice ? ` Estimated cost: $${estimatedPrice.toFixed(2)}.` : '';
         
-        // Add notification for successful booking submission
-        await addNotification({
-          userId: user?.id || '',
-          type: 'booking_submitted',
-          title: 'Booking Request Submitted',
-          message: `Your booking request for ${formData.eventType} on ${formData.date} has been submitted successfully.${priceMessage} We'll get back to you soon with confirmation.`,
-          data: {
-            bookingId: result.booking?.id,
-            eventType: formData.eventType,
-            date: formData.date,
-            estimatedPrice: estimatedPrice
-          }
-        });
+        // Note: Notification is automatically created by the backend
+        // No need to create it here to avoid duplicates
         
         alert(`Thank you for your booking request!${priceMessage} We'll get back to you soon with confirmation.`);
         // Reset form
