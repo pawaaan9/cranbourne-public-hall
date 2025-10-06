@@ -6,7 +6,6 @@ import Footer from "./components/Footer";
 import Calendar from "./components/Calendar";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import Hero from "../assets/hero.jpg";
-import Link from "next/link";
 import { useAuth } from "../contexts/AuthContext";
 import LoginModal from "../components/LoginModal";
 import { useState } from "react";

@@ -1,11 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import Footer from "../components/Footer";
 import Calendar from "../components/Calendar";
 import Navbar from "../components/navbar";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNotifications } from "../../contexts/NotificationContext";
 import LoginModal from "../../components/LoginModal";
 
 interface Resource {
@@ -49,7 +47,6 @@ interface ResourcesResponse {
 
 export default function BookNow() {
   const { user, isAuthenticated } = useAuth();
-  const { addNotification } = useNotifications();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -328,7 +325,7 @@ export default function BookNow() {
               Book Your Event
             </h1>
             <p className="text-lg text-[#897561] max-w-2xl mx-auto mb-4">
-              Reserve Cranbourne Public Hall for your special occasion. Fill out the form below and we'll get back to you within 24 hours.
+              Reserve Cranbourne Public Hall for your special occasion. Fill out the form below and we&apos;ll get back to you within 24 hours.
             </p>
             {!isAuthenticated && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-2xl mx-auto">

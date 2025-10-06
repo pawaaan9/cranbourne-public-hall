@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useNotifications } from '../contexts/NotificationContext';
+import type { Notification } from '../contexts/NotificationContext';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     }
   };
 
-  const handleNotificationClick = async (notification: any) => {
+  const handleNotificationClick = async (notification: Notification) => {
     if (!notification.isRead) {
       await markAsRead(notification.id);
     }
@@ -177,7 +178,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 </svg>
               </div>
               <h4 className="text-lg font-medium text-gray-900 mb-2">No notifications yet</h4>
-              <p className="text-gray-500 text-sm">You'll see booking updates and important messages here.</p>
+              <p className="text-gray-500 text-sm">You&apos;ll see booking updates and important messages here.</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">

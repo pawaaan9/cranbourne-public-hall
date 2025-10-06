@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
 export interface Notification {
   id: string;
@@ -11,7 +11,7 @@ export interface Notification {
   type: 'booking_submitted' | 'booking_confirmed' | 'booking_rejected' | 'booking_cancelled' | 'booking_price_updated';
   title: string;
   message: string;
-  data?: any; // Additional data like booking details
+  data?: Record<string, unknown>; // Additional data like booking details
   isRead: boolean;
   createdAt: Date;
   readAt?: Date;

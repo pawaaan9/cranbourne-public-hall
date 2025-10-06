@@ -58,7 +58,10 @@ export default function ScrollTestModal() {
                   const newDiv = document.createElement('div');
                   newDiv.className = 'p-4 bg-gray-100 rounded mb-2';
                   newDiv.innerHTML = '<p>Additional modal content added dynamically</p>';
-                  document.querySelector('.bg-white.rounded-lg.p-6').appendChild(newDiv);
+                  const container = document.querySelector('.bg-white.rounded-lg.p-6');
+                  if (container) {
+                    container.appendChild(newDiv);
+                  }
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
               >

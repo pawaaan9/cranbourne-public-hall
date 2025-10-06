@@ -11,6 +11,12 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
+function hasNameString(value: unknown): value is { name: string } {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as { [key: string]: unknown };
+  return typeof candidate['name'] === 'string';
+}
+
 interface BookingInfo {
   bookingId: string;
   startTime: string;
@@ -117,10 +123,7 @@ export default function Calendar({ resourceId, resourceName, hallOwnerId, onDate
       } catch (err: unknown) {
         console.error('Error fetching unavailable dates:', err);
 
-        const errorName =
-          typeof err === 'object' && err !== null && 'name' in err && typeof (err as any).name === 'string'
-            ? (err as any).name as string
-            : undefined;
+        const errorName = hasNameString(err) ? err.name : undefined;
 
         const isAbort = errorName === 'AbortError' || errorName === 'TimeoutError';
 
@@ -271,7 +274,6 @@ export default function Calendar({ resourceId, resourceName, hallOwnerId, onDate
                   setOfflineMode(false);
                   // Trigger a re-fetch
                   const currentMonth = month;
-                  const currentYear = year;
                   setMonth(currentMonth === 11 ? 0 : currentMonth + 1);
                   setTimeout(() => setMonth(currentMonth), 100);
                 }} 
