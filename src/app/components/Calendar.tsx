@@ -75,7 +75,7 @@ export default function Calendar({ resourceId, resourceName, hallOwnerId, onDate
           params.append('resourceId', resourceId);
         }
         
-        const url = `http://localhost:5000/api/bookings/unavailable-dates/${hallOwnerId}?${params}`;
+        const url = `/api/bookings/unavailable-dates/${hallOwnerId}?${params}`;
         console.log('Fetching unavailable dates from:', url);
         
         const response = await fetch(url, {

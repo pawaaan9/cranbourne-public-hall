@@ -107,8 +107,8 @@ export default function BookNow() {
         
         // Fetch resources and pricing in parallel
         const [resourcesResponse, pricingResponse] = await Promise.all([
-          fetch(`http://localhost:5000/api/resources/public/${hallOwnerId}`),
-          fetch(`http://localhost:5000/api/pricing/public/${hallOwnerId}`)
+          fetch(`/api/resources/public/${hallOwnerId}`),
+          fetch(`/api/pricing/public/${hallOwnerId}`)
         ]);
         
         if (!resourcesResponse.ok) {
@@ -264,11 +264,11 @@ export default function BookNow() {
         customerAvatar: user?.avatar,
         guestCount: formData.guests,
         bookingSource: 'cranbourne-website'
-      };
+      };  
       
       console.log("Submitting booking:", bookingData);
       
-      const response = await fetch('http://localhost:5000/api/bookings', {
+        const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
