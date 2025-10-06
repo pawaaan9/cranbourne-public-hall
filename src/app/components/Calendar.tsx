@@ -114,16 +114,23 @@ export default function Calendar({ resourceId, resourceName, hallOwnerId, onDate
           setError(errorMessage);
           setUnavailableDates({});
         }
-      } catch (error) {
-        console.error('Error fetching unavailable dates:', error);
-        
-        if (retryCount < 2 && error.name !== 'AbortError') {
+      } catch (err: unknown) {
+        console.error('Error fetching unavailable dates:', err);
+
+        const errorName =
+          typeof err === 'object' && err !== null && 'name' in err && typeof (err as any).name === 'string'
+            ? (err as any).name as string
+            : undefined;
+
+        const isAbort = errorName === 'AbortError' || errorName === 'TimeoutError';
+
+        if (retryCount < 2 && !isAbort) {
           console.log(`Retrying due to network error... (${retryCount + 1}/2)`);
           setTimeout(() => fetchUnavailableDates(retryCount + 1), 2000);
           return;
         }
-        
-        if (error.name === 'AbortError') {
+
+        if (isAbort) {
           setError('Request timeout - please check if backend server is running');
         } else {
           setError('Network error - please check if backend server is running on port 5000');
